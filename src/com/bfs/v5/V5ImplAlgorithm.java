@@ -42,6 +42,8 @@ public class V5ImplAlgorithm implements V5IAlgorithm {
 		queue.add(start);
 
 		Node cur, to;
+		Map<Node, List<Edge>> map = g.getAdj();
+		List<Edge> toList = null;
 		while (!queue.isEmpty()) {
 			cur = queue.poll();
 
@@ -49,11 +51,12 @@ public class V5ImplAlgorithm implements V5IAlgorithm {
 				visitedVertex.add(cur);
 				System.out.println("查找的节点是：" + cur.label);
 				
-				List<Edge> toList = g.getAdj().get(cur);
-				if(toList == null){
+				if(!map.containsKey(cur)){
 					System.out.println("Node Edge = " + cur);
 					continue;
 				}
+				
+				toList = map.get(cur);
 				
 				for (int i = 0; i < toList.size(); i++) {
 					// 把它的下一层，加入到队列中
