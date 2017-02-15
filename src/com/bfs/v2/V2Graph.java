@@ -20,7 +20,7 @@ public class V2Graph {
 	private V2IAlgorithm algorithm;
 
 	public V2Graph(V2IAlgorithm algorithm) {
-		this.algorithm = algorithm;
+		setAlgorithm(algorithm);
 	}
 
 	/**
@@ -81,5 +81,13 @@ public class V2Graph {
 
 	public Map<String, List<String>> getAdj() {
 		return adj;
+	}
+	
+	public void setAlgorithm(V2IAlgorithm algorithm){
+		this.algorithm = algorithm;
+	}
+	
+	public void clearAdj(){
+		this.adj.clear();
 	}
 }
