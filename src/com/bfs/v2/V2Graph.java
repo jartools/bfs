@@ -50,7 +50,9 @@ public class V2Graph {
 			stack.push(location);
 			location = path.get(location);
 		}
-		stack.push(firstVertax);
+		
+		if (!toVertex.equals(firstVertax))
+			stack.push(firstVertax);
 
 		return stack;
 	}
@@ -82,12 +84,12 @@ public class V2Graph {
 	public Map<String, List<String>> getAdj() {
 		return adj;
 	}
-	
-	public void setAlgorithm(V2IAlgorithm algorithm){
+
+	public void setAlgorithm(V2IAlgorithm algorithm) {
 		this.algorithm = algorithm;
 	}
-	
-	public void clearAdj(){
+
+	public void clearAdj() {
 		this.adj.clear();
 	}
 }
