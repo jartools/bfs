@@ -11,6 +11,11 @@ public class TransformGate {
 		this.fromMapID = fromMapID;
 		this.toMapID = toMapID;
 	}
+	
+
+	public TransformGate(int iD, int fromMapID) {
+		this(iD, fromMapID, 0);
+	}
 
 	@Override
 	public String toString() {
