@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * (无向)图
+ * 图 - 相当于管理类
  */
 public class V5Graph {
 	// 图的起点
 	private Node firstVertax;
 
-	// 起点 -- 到达点列表
+	// 地图 - 该地图上的所有传送门
 	private Map<Node, List<Edge>> adj = new HashMap<>();
 
 	// 遍历算法
@@ -67,7 +67,7 @@ public class V5Graph {
 
 		Map<Node, Node> path = algorithm.getPath();
 		
-		Node cur, to;
+		Node cur, next;
 		
 		cur = path.get(toVertex);
 		for (; null != cur && !cur.equals(fromVertex);) {
@@ -80,18 +80,19 @@ public class V5Graph {
 
 		Collections.reverse(list);
 
-		int lens = list.size();
 		List<Object> obj = new ArrayList<Object>();
 		Edge edg = null;
+		int lens = list.size();
 		for (int i = 0; i < lens; i++) {
-			cur = list.get(i);
-			to = null;
-			
+			cur = list.get(i);			
 			System.out.println("-->" + cur.label);
 			
 			if (i < lens - 1)
-				to = list.get(i + 1);
-			edg = getEdge(cur,to);
+				next = list.get(i + 1);
+			else
+				next = null;
+				
+			edg = getEdge(cur,next);
 			if(edg != null)
 				obj.add(edg.obj);
 		}

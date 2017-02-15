@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * 
- * @title 节点(地图点)
+ * @title 节点 - 相当于地图
  * 
  * @author Canyon
  *
@@ -13,6 +13,8 @@ import java.util.List;
  */
 public class Node {
 	public String label = "";
+	
+	// 地图上的传送门
 	public List<Edge> edgeList = new ArrayList<Edge>();
 
 	public Node(String label) {

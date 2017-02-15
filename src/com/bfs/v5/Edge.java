@@ -2,7 +2,7 @@ package com.bfs.v5;
 
 /**
  * 
- * @title 跳转边
+ * @title 跳转边 - 地图上的传送门
  * 
  * @author Canyon
  *
@@ -12,6 +12,7 @@ public class Edge {
 	public Node start;
 	public Node end;
 	
+	// 传送门数据
 	public Object obj;
 	
 	public Edge(Node start, Node end,Object obj) {
