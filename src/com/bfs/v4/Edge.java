@@ -1,5 +1,13 @@
 package com.bfs.v4;
 
+/**
+ * 
+ * @title 跳转边
+ * 
+ * @author Canyon
+ *
+ * @time 2017年2月15日 下午6:10:10
+ */
 public class Edge {
 	public Node start;
 	public Node end;

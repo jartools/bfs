@@ -3,6 +3,14 @@ package com.bfs.v4;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 
+ * @title 节点(地图点)
+ * 
+ * @author Canyon
+ *
+ * @time 2017年2月15日 下午6:10:26
+ */
 public class Node {
 	public String label = "";
 	public List<Edge> edgeList = new ArrayList<Edge>();
