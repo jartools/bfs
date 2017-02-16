@@ -1,4 +1,4 @@
-package com.maps;
+package com.maps.v1;
 
 import java.util.HashMap;
 import java.util.Iterator;

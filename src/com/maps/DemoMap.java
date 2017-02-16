@@ -4,8 +4,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.bfs.Node;
-import com.maps.MapSearcher.SearchResult;
-import com.maps.Maps.MapBuilder;
+import com.maps.v1.MapSearcher;
+import com.maps.v1.Maps;
+import com.maps.v1.MapSearcher.SearchResult;
+import com.maps.v1.Maps.MapBuilder;
 
 public class DemoMap {
 
