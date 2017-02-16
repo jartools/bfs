@@ -1,15 +1,13 @@
-package com.maps;
+package com.maps.v1;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import com.bfs.Node;
-import com.maps.v1.MapSearcher;
-import com.maps.v1.Maps;
 import com.maps.v1.MapSearcher.SearchResult;
 import com.maps.v1.Maps.MapBuilder;
 
-public class DemoMap {
+public class DemoMap1 {
 
 	public static void main(String[] args) {
 		// test();

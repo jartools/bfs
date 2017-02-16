@@ -16,6 +16,12 @@ public class Node {
 
 	// 地图上的传送门
 	public List<Edge> edgeList = new ArrayList<Edge>();
+	
+	public boolean isValidate = true;
+	
+	public boolean validate() {
+		return isValidate;
+	}
 
 	public Node(String label) {
 		super();
@@ -55,6 +61,10 @@ public class Node {
 
 	@Override
 	public String toString() {
+		return "Node_"+(label != null ? label : "");
+	}
+	
+	public String toString2() {
 		return "Node [" + (label != null ? "label=" + label + ", " : "")
 				+ (edgeList != null ? "edgeList=" + edgeList.size() : "") + "]";
 	}
