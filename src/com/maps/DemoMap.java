@@ -96,7 +96,7 @@ public class DemoMap {
 		mapBuilder.addPath(b, g, 3);
 		mapBuilder.addPath(d, e, 1);
 		mapBuilder.addPath(h, g, 4);
-		mapBuilder.addPath(e,f, 2);
+		mapBuilder.addPath(e, f, 2);
 		mapBuilder.addPath(e, g, 1);
 		mapBuilder.addPath(f, i, 1);
 		mapBuilder.addPath(g, i, 1);
@@ -115,6 +115,13 @@ public class DemoMap {
 		searcher.init(a, map, closeNodeIdsSet);
 		// 获取结果
 		SearchResult<Node> result = searcher.getResult(g);
+		System.out.println(result);
+		// test.printPathInfo();
+
+		// 设置初始节点
+		searcher.init(b, map, closeNodeIdsSet);
+		// 获取结果
+		result = searcher.getResult(a);
 		System.out.println(result);
 		// test.printPathInfo();
 	}
