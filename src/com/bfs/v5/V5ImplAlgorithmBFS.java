@@ -10,7 +10,7 @@ import java.util.Queue;
 /**
  * 封装BFS算法
  */
-public class V5ImplAlgorithm implements V5IAlgorithm {
+public class V5ImplAlgorithmBFS implements V5IAlgorithm {
 	// 保存已经访问过的地点
 	private List<Node> visitedVertex = new ArrayList<>();
 	// 保存最短路径
@@ -44,20 +44,23 @@ public class V5ImplAlgorithm implements V5IAlgorithm {
 		Node cur, to;
 		Map<Node, List<Edge>> map = g.getAdj();
 		List<Edge> toList = null;
+
+		boolean isHasCur = false;
 		while (!queue.isEmpty()) {
 			cur = queue.poll();
 
 			if (!visitedVertex.contains(cur)) {
 				visitedVertex.add(cur);
-				System.out.println("查找的节点是：" + cur.label);
+				isHasCur = map.containsKey(cur);
 				
-				if(!map.containsKey(cur)){
-					System.out.println("Node Edge = " + cur);
+				System.out.println("广度遍历 - 查找的节点是：" + cur.label + (isHasCur ? "" : (" - Null Edge,Node = " + cur)));
+
+				if (!isHasCur) {
 					continue;
 				}
-				
+
 				toList = map.get(cur);
-				
+
 				for (int i = 0; i < toList.size(); i++) {
 					// 把它的下一层，加入到队列中
 					to = toList.get(i).end;
