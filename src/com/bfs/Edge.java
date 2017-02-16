@@ -20,6 +20,8 @@ public class Edge {
 		this.start = start;
 		this.end = end;
 		this.obj = obj;
+		
+		this.start.addEdge(this);
 	}
 
 	@Override

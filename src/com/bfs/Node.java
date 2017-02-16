@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class Node {
 	public String label = "";
-	
+
 	// 地图上的传送门
 	public List<Edge> edgeList = new ArrayList<Edge>();
 
@@ -21,22 +21,36 @@ public class Node {
 		super();
 		this.label = label;
 	}
-	
-	public Edge getEdge(Node toNode){
-		if(toNode == null)
+
+	public Edge getEdge(Node toNode) {
+		if (toNode == null)
 			return null;
-		
+
 		int lens = edgeList.size();
-		if(lens <= 0){
+		if (lens <= 0) {
 			return null;
 		}
 		Edge tmp = null;
 		for (int i = 0; i < lens; i++) {
 			tmp = edgeList.get(i);
-			if(tmp.end == toNode)
+			if (tmp.end == toNode)
 				return tmp;
 		}
 		return null;
+	}
+
+	public void addEdge(Edge v) {
+		if (v.start != this)
+			return;
+
+		if (edgeList.contains(v))
+			return;
+
+		edgeList.add(v);
+	}
+
+	public List<Edge> getEdgeList() {
+		return this.edgeList;
 	}
 
 	@Override

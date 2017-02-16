@@ -11,7 +11,7 @@ public class DemoMap {
 
 	public static void main(String[] args) {
 		// test();
-		test2();
+		test3();
 	}
 
 	/**
@@ -116,7 +116,7 @@ public class DemoMap {
 		// 获取结果
 		SearchResult<Node> result = searcher.getResult(g);
 		System.out.println(result);
-		// test.printPathInfo();
+		searcher.printPathInfo();
 
 		// 设置初始节点
 		searcher.init(b, map, closeNodeIdsSet);
@@ -124,5 +124,63 @@ public class DemoMap {
 		result = searcher.getResult(a);
 		System.out.println(result);
 		// test.printPathInfo();
+	}
+	
+	static void test3() {
+
+		MapBuilder<Node> mapBuilder = new Maps.MapBuilder<Node>().create();
+		// 构建节点
+		// 构造需要点对象
+		Node a = new Node("a");
+		Node b = new Node("b");
+		Node c = new Node("c");
+		Node d = new Node("d");
+		Node e = new Node("e");
+		Node f = new Node("f");
+		Node g = new Node("g");
+		Node h = new Node("h");
+
+		mapBuilder.addNode(Maps.Node.valueOf(a));
+		mapBuilder.addNode(Maps.Node.valueOf(b));
+		mapBuilder.addNode(Maps.Node.valueOf(c));
+		mapBuilder.addNode(Maps.Node.valueOf(d));
+		mapBuilder.addNode(Maps.Node.valueOf(e));
+		mapBuilder.addNode(Maps.Node.valueOf(f));
+		mapBuilder.addNode(Maps.Node.valueOf(g));
+		mapBuilder.addNode(Maps.Node.valueOf(h));
+
+		// 构建路径
+		mapBuilder.addPath(a, b, 1);
+		mapBuilder.addPath(a, c, 2);
+		mapBuilder.addPath(a, e, 4);
+		
+		mapBuilder.addPath(b, c, 3);
+		
+		mapBuilder.addPath(c, h, 3);
+		mapBuilder.addPath(c, a, 2);
+		
+		mapBuilder.addPath(d, e, 2);
+		mapBuilder.addPath(d, f, 5);
+		
+		mapBuilder.addPath(e, f, 2);
+		mapBuilder.addPath(f, g, 1);
+		
+		mapBuilder.addPath(h, g, 1);
+
+		// 构建全局Map
+		Maps<Node> map = mapBuilder.build();
+
+		// 创建路径搜索器(每次搜索都需要创建新的MapSearcher)
+		MapSearcher<Node> searcher = new MapSearcher<Node>();
+		// 创建关闭节点集合
+		Set<Node> closeNodeIdsSet = new HashSet<Node>();
+		// closeNodeIdsSet.add("C");
+
+		// 设置初始节点
+		searcher.init(b, map, closeNodeIdsSet);
+		// 获取结果
+		SearchResult<Node> result = searcher.getResult(e);
+		System.out.println(result);
+		searcher.printPathInfo();
 	}
 }
