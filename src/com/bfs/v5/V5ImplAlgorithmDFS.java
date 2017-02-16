@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.bfs.Edge;
+import com.bfs.Node;
+
 public class V5ImplAlgorithmDFS implements V5IAlgorithm {
 	// 保存已经访问过的地点
 	private List<Node> visitedVertex = new ArrayList<>();

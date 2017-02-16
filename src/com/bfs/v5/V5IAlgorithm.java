@@ -1,6 +1,8 @@
 package com.bfs.v5;
 import java.util.Map;
 
+import com.bfs.Node;
+
 
 public interface V5IAlgorithm {
 	/**

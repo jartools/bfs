@@ -1,4 +1,4 @@
-package com.bfs.v4;
+package com.bfs;
 
 public class TransformGate {
 	public int ID;

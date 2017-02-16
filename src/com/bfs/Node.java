@@ -1,4 +1,4 @@
-package com.bfs.v5;
+package com.bfs;
 
 import java.util.ArrayList;
 import java.util.List;

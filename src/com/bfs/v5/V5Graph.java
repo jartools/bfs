@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.bfs.Edge;
+import com.bfs.Node;
+
 /**
  * 图 - 相当于管理类
  */

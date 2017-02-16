@@ -3,7 +3,9 @@ package com.bfs.v5;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.bfs.v4.TransformGate;
+import com.bfs.Edge;
+import com.bfs.Node;
+import com.bfs.TransformGate;
 
 public class Demo5 {
 

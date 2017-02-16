@@ -8,6 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+import com.bfs.Edge;
+import com.bfs.Node;
+import com.bfs.TransformGate;
+
 public class MyGraph {
 	public static void main(String args[]) {
 

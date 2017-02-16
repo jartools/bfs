@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+import com.bfs.Edge;
+import com.bfs.Node;
+
 /**
  * 封装BFS算法
  */
