@@ -30,13 +30,13 @@ public class Graph {
 			nodes.put(en.label, en);
 	}
 
-	public Graph addPath(Node node1Id, Node node2Id, int weight) {
+	public Graph addPath(Node node1Id, Node node2Id, int distance) {
 		addNode(node1Id);
 		addNode(node2Id);
 
 		Edge edg = getPath(node1Id, node2Id);
 		if (edg == null) {
-			edg = new Edge(node1Id, node2Id, weight);
+			edg = new Edge(node1Id, node2Id, distance);
 		}
 		return this;
 	}

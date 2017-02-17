@@ -17,6 +17,10 @@ public class Edge {
 
 	// 传送门数据
 	public Object obj;
+	
+	public Edge(Node start, Node end) {
+		this(start, end, 1, null);
+	}
 
 	public Edge(Node start, Node end, Object obj) {
 		this(start, end, 1, obj);

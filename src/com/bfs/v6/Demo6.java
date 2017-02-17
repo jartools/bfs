@@ -45,7 +45,7 @@ public class Demo6 {
 		// 设置初始节点
 		searcher.init(a, map, closeNodeIdsSet);
 		// 获取结果
-		SearchResult<String> result = searcher.getResult(f);
+		SearchResult<String> result = searcher.getResult(g);
 		System.out.println(result);
 		searcher.printPathInfo();
 	}

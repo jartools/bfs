@@ -12,6 +12,14 @@ import java.util.Set;
 import com.bfs.Edge;
 import com.bfs.Node;
 
+/**
+ * 
+ * @title  算法 - 迪杰斯特拉 Dijkstra 算法
+ * 
+ * @author Canyon
+ *
+ * @time 2017年2月17日 上午10:14:18
+ */
 public class ImplAlgorithm {
 	Graph graph;
 
