@@ -35,6 +35,11 @@ public class ImplAlgorithm2 {
 	Map<Node, List<Node>> pathInfo = new HashMap<>();
 
 	public Node init(Node source, Graph map, Set<Node> closeSet) {
+		this.open.clear ();
+		this.close.clear ();
+		this.path.clear ();
+		this.pathInfo.clear ();
+		
 		Map<String, Node> nodeMap = map.getNodes();
 		Node startNode = nodeMap.get(source.label);
 		close.add(startNode);

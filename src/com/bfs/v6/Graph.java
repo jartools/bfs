@@ -44,4 +44,11 @@ public class Graph {
 	public Edge getPath(Node node1Id, Node node2Id) {
 		return node1Id.getEdge(node2Id);
 	}
+	
+	public Node GetNode(int label){
+		if (nodes.containsKey(label)) {
+			return nodes.get(label);
+		}
+		return null;
+	}
 }
