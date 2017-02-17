@@ -11,6 +11,7 @@ import java.util.Set;
 
 import com.bfs.Edge;
 import com.bfs.Node;
+import com.bfs.SearchResult;
 
 /**
  * 

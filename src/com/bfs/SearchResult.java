@@ -1,4 +1,4 @@
-package com.bfs.v6;
+package com.bfs;
 
 import java.util.Iterator;
 import java.util.List;
@@ -39,7 +39,7 @@ public class SearchResult<T> {
 		return sb.toString();
 	}
 
-	protected static <T> SearchResult<T> valueOf(List<T> path, Integer distance) {
+	public static <T> SearchResult<T> valueOf(List<T> path, Integer distance) {
 		SearchResult<T> r = new SearchResult<T>();
 		r.path = path;
 		r.distance = distance;

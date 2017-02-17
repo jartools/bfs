@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.bfs.Node;
+import com.bfs.SearchResult;
 
 public class Demo6 {
 
