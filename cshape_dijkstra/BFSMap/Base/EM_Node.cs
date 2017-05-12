@@ -16,11 +16,13 @@ public class EM_Node  {
 	// 所属 标识
 	public int belongTo = 0;
 
-	// 分类
+	// 分类(用于区域查询分区的模式)
 	public int types = 0;
 
+	// 需要等级
 	public int needLevel = 0;
 
+	// 跳转
 	public List<EM_Edge> edgeList = new List<EM_Edge> ();
 
 	public EM_Node(object label):this(label,0){
@@ -39,6 +41,7 @@ public class EM_Node  {
 		this.needLevel = needLevel;
 	}
 
+	// 取得跳转
 	public EM_Edge GetEdge(EM_Node node){
 		if (node == null)
 			return null;
@@ -56,6 +59,7 @@ public class EM_Node  {
 		return null;
 	}
 
+	// 添加跳转
 	public void AddEdge(EM_Edge v){
 		if (!this.Equals (v.start))
 			return;
@@ -66,6 +70,7 @@ public class EM_Node  {
 		edgeList.Add (v);
 	}
 
+	// 所有跳转
 	public List<EM_Edge> GetEdgeList(){
 		return edgeList;
 	}

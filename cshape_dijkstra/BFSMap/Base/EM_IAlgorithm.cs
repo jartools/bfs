@@ -9,9 +9,13 @@ using System.Collections.Generic;
 /// 功能 : 
 /// </summary>
 public interface EM_IAlgorithm {
+
+	// 到达目的地的距离
 	int Distance ();
 
+	// 到达目的地的路径列表
 	List<EM_Node> GetPathNode ();
 
+	// 到达目的地的跳转列表
 	List<EM_Edge> GetPathEdge ();
 }

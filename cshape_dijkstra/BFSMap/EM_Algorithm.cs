@@ -9,5 +9,6 @@ using System.Collections.Generic;
 /// 功能 : 
 /// </summary>
 public interface EM_Algorithm : EM_IAlgorithm{
+	// 执行算法
 	void Perform(EM_GraphBase g, int orgMapId,int toMapId, int curLev);
 }

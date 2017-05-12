@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 /// <summary>
 /// 类名 : 算法 - 迪杰斯特拉 Dijkstra 算法
-/// 作者 : Canyon
+/// 作者 : Canyon/龚阳辉
 /// 日期 : 2017-02-27 15:40
 /// 功能 : 计算相同地图类的创送
 /// </summary>
@@ -12,6 +12,7 @@ public class EM_DijkstraArea : EM_DijkstraBase, EM_AlgorithmArea {
 
 	#region EM_AlgorithmArea implementation
 
+	// 执行算法
 	public void Perform(EM_GraphBase g, int curMapID,int orgAreaGID,int toAreaGID,int curLev)
 	{
 		Clear ();

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 /// <summary>
 /// 类名 : 移动到某个位置管理对象(自动寻路)
-/// 作者 : Canyon
+/// 作者 : Canyon/龚阳辉
 /// 日期 : 2017-02-21 20:31
 /// 功能 : 处理地图间的跳转(包含不连贯区域地图的跳转)
 /// </summary>
@@ -28,23 +28,63 @@ public class MgrMoveTarget : Kernel<MgrMoveTarget> {
 		}
 	}
 
+	// 跳转队列
 	Queue<EM_Edge> queue = new Queue<EM_Edge>();
+
+	// 当前跳转
 	EM_Edge curEdge = null;
 
+	// 目标地图ID
 	int m_iToMapId = 0;
+
+	// 目标地图的某个坐标点
 	Vector3 m_v3ToPos = Vector3.zero;
 
+	// 到达回调
 	System.Action m_callCompleted;
 
 	// 是否自动寻路
-	bool m_isAutoMove = false;
+	[System.NonSerialized]
+	public bool m_isAutoMove = false;
 
 	// 地图内跳转
 	Queue<EM_Edge> queueArea = new Queue<EM_Edge>();
 	Vector3 m_v3ToAreaPos = Vector3.zero;
 	System.Action m_callArrived4Area = null;
 
+	// 地图与地图之前
+	EM_Graph graphMap = null;
+
+	// 当前地图区域内
+	EM_GraphArea graphArea =  null;
+
+	// 初始化寻路
+	public void Init(){
+		graphMap = new EM_Graph();
+		graphArea = new EM_GraphArea();
+
+		// mgrCfg.GetMapListConfig (item.GateMapId);
+		int needLev = 0;
+		foreach (var item in mgrCfg.GetAllTransferGate ()) {
+			graphMap.InitNodes (item);
+			graphMap.SetLimitLev (item.GateMapId,needLev);
+			graphMap.SetLimitLev (item.TargetMapId,needLev);
+
+			graphArea.InitNodes (item);
+			graphArea.SetLimitLev (item.GateMapId,needLev);
+			graphArea.SetLimitLev (item.TargetMapId,needLev);
+		}
+	}
+
+	/// <summary>
+	/// 移动
+	/// </summary>
+	/// <param name="toMapId">To map identifier.</param>
+	/// <param name="toPos">To position.</param>
+	/// <param name="callFinished">Call finished.</param>
 	public void MoveTo(int toMapId,Vector3 toPos,System.Action callFinished = null){
+		ClearAll ();
+
 		m_callCompleted = callFinished;
 		m_v3ToPos = toPos;
 		m_iToMapId = toMapId;
@@ -52,6 +92,9 @@ public class MgrMoveTarget : Kernel<MgrMoveTarget> {
 		HandleToTarget ();
 	}
 
+	/// <summary>
+	/// 处理移动到某个点
+	/// </summary>
 	void HandleToTarget(){
 		queue.Clear ();
 		queueArea.Clear ();
@@ -67,14 +110,14 @@ public class MgrMoveTarget : Kernel<MgrMoveTarget> {
 
 		int fmMapId = curMapId;
 
-		Debuger.Log ("From Map = [" + fmMapId + "],To Map = [" + m_iToMapId + "] ");
+		// Debuger.Log ("From Map = [" + fmMapId + "],To Map = [" + m_iToMapId + "] ");
 		if (fmMapId == m_iToMapId) {
-			ComputeMoveToPos (master.myTransform.position,m_v3ToPos,MoveToPos);
+			ComputeMoveToPos (master.myTransform.position,m_v3ToPos,MoveToPos,fmMapId,m_iToMapId);
 			return;
 		}
 
-		EM_Graph.Instance.FindPath (fmMapId, m_iToMapId,master.Lv);
-		List<EM_Edge> list = EM_Graph.Instance.GetEdgePath ();
+		graphMap.FindPath (fmMapId, m_iToMapId,master.Lv);
+		List<EM_Edge> list = graphMap.GetEdgePath ();
 
 		if (list != null) {
 			foreach (var item in list) {
@@ -85,50 +128,77 @@ public class MgrMoveTarget : Kernel<MgrMoveTarget> {
 		MoveToNextMap();
 	}
 
+	/// <summary>
+	/// 移动到下个地图
+	/// </summary>
 	void MoveToNextMap(){
 		StartCoroutine (MoveToMap());
 	}
 
+	/// <summary>
+	/// 取得Y值
+	/// </summary>
+	float GetY(Vector3 orgPos){
+        float y;
+		Entity.GetTerrainHeight (orgPos.x, orgPos.z, out y);
+        return y;
+	}
+
+	/// <summary>
+	/// 移动到下个地图
+	/// </summary>
 	IEnumerator MoveToMap(){
 		yield return null;
+		int belongOrg = curMapId;
+		int belongTo = m_iToMapId;
 		if (queue.Count > 0) {
 			curEdge = queue.Peek ();
 			// 判断地图是否可以到达
 			m_v3ToAreaPos = curEdge.gate.GateV3;
-			m_v3ToAreaPos.y = master.myTransform.position.y;
-			if (isCanMoveToPos (master.myTransform.position, m_v3ToAreaPos)) {
-				Debuger.Log ("MoveToMap To Next = " + curEdge.start.label + " --> " + curEdge.end.label + ", door Pos = " + curEdge.gate.GateV3);
+			m_v3ToAreaPos.y = GetY(m_v3ToAreaPos);
+			belongTo = curEdge.start.belongTo;
+			if (isCanMoveToPos (master.myTransform.position, m_v3ToAreaPos,belongOrg,belongTo)) {
+				// Debuger.Log ("MoveToMap To Next = " + curEdge.start.label + " --> " + curEdge.end.label + ", door Pos = " + curEdge.gate.GateV3);
 				curEdge = queue.Dequeue ();
 				master.Move2Pos (m_v3ToAreaPos, () => ArriveNextMap ());
 			} else {
-				Debuger.Log ("MoveToMap To Area = " + master.myTransform.position + " --> " + m_v3ToAreaPos + ", door Pos = " + curEdge.gate.GateV3);
-				ComputeMoveToPos (master.myTransform.position,m_v3ToAreaPos,MoveToNextMap);
+				// Debuger.Log ("MoveToMap To Area = " + master.myTransform.position + " --> " + m_v3ToAreaPos + ", door Pos = " + curEdge.gate.GateV3);
+				ComputeMoveToPos (master.myTransform.position,m_v3ToAreaPos,MoveToNextMap,belongOrg,belongTo);
 			}
 		} else {
-			ComputeMoveToPos (master.myTransform.position,m_v3ToPos,MoveToPos);
+			ComputeMoveToPos (master.myTransform.position,m_v3ToPos,MoveToPos,belongOrg,belongTo);
 		}
 	}
 
+	/// <summary>
+	/// 到达下个地图
+	/// </summary>
 	void ArriveNextMap(){
 		MyScenesManager.Instance ().EntryMapOk -= MoveToNextMap;
 		MyScenesManager.Instance ().EntryMapOk += MoveToNextMap;
 	}
 
-	bool isCanMoveToPos(Vector3 fmPos,Vector3 toPos){
+	/// <summary>
+	/// 同地图里面判断是否可以到某点
+	/// </summary>
+	bool isCanMoveToPos(Vector3 fmPos,Vector3 toPos,int belongOrg,int belongTo){
 		toPos.y = fmPos.y;
-		EM_GraphArea.Instance.FindPathByPos (fmPos, toPos, master.Lv);
-		List<EM_Edge> list = EM_GraphArea.Instance.GetEdgePath ();
+		graphArea.FindPathByPos (fmPos, toPos, master.Lv,belongOrg,belongTo);
+		List<EM_Edge> list = graphArea.GetEdgePath ();
 		return (list == null || list.Count <= 0);
 	}
 
-	void ComputeMoveToPos(Vector3 fmPos,Vector3 toPos,System.Action callArriveArea){
+	/// <summary>
+	/// 同地图里面移动到某点
+	/// </summary>
+	void ComputeMoveToPos(Vector3 fmPos,Vector3 toPos,System.Action callArriveArea,int belongOrg,int belongTo){
 		queueArea.Clear ();
 		this.m_callArrived4Area = callArriveArea;
 
 		toPos.y = fmPos.y;
 
-		EM_GraphArea.Instance.FindPathByPos (fmPos, toPos, master.Lv);
-		List<EM_Edge> list = EM_GraphArea.Instance.GetEdgePath ();
+		graphArea.FindPathByPos (fmPos, toPos, master.Lv,belongOrg,belongTo);
+		List<EM_Edge> list = graphArea.GetEdgePath ();
 		if (list != null) {
 			foreach (var item in list) {
 				queueArea.Enqueue (item);
@@ -137,60 +207,81 @@ public class MgrMoveTarget : Kernel<MgrMoveTarget> {
 		MoveToNextArea ();
 	}
 
-
+	/// <summary>
+	/// 同地图里面移动到某点
+	/// </summary>
 	void MoveToNextArea(){
 		StartCoroutine (MoveToArea());
 	}
 
+	/// <summary>
+	/// 同地图里面到达到某点
+	/// </summary>
 	public void ArriveNextArea(){
 		if (!m_isAutoMove)
 			return;
 		MoveToNextArea ();
 	}
 
+	/// <summary>
+	/// 同地图里面到某点
+	/// </summary>
 	IEnumerator MoveToArea(){
 		yield return null;
 		if (queueArea.Count > 0) {
 			curEdge = queueArea.Dequeue ();
-			Debuger.Log ("MoveToArea = " + curEdge.start.label + " --> " + curEdge.end.label + ", door Pos = " + curEdge.gate.GateV3);
+			// Debuger.Log ("MoveToArea = " + curEdge.start.label + " --> " + curEdge.end.label + ", door Pos = " + curEdge.gate.GateV3);
 			master.Move2Pos (curEdge.gate.GateV3,null);
 		} else {
 			ExcuteCallMoveArea ();
 		}
 	}
 
+	/// <summary>
+	/// 同地图里面到某点
+	/// </summary>
 	void MoveToPos(){
 		if (curMapId == m_iToMapId) {
-			m_v3ToPos.y = master.myTransform.position.y;
-			Debuger.Log ("MoveToPos Arrive TargetMap = " + master.myTransform.position + " --> " + m_v3ToPos);
+			m_v3ToPos.y = GetY(m_v3ToPos);
+			// Debuger.Log ("MoveToPos Arrive TargetMap = " + master.myTransform.position + " --> " + m_v3ToPos);
 			master.Move2Pos (m_v3ToPos, () => {
 				ExcuteComplected ();
 			});
 		} else{
-			Clear();
+			ClearAll();
 		}
 	}
 
+	/// <summary>
+	/// 最终到达目的地
+	/// </summary>
 	void ExcuteComplected(){
-		Debuger.Log (" ExcuteComplected Arrived target --> " + m_v3ToPos + ", cur = " + master.myTransform.position);
+		// Debuger.Log (" ExcuteComplected Arrived target --> " + m_v3ToPos + ", cur = " + master.myTransform.position);
 		ExcuteCall ();
 		Clear();
 	}
 
+	/// <summary>
+	/// 到达目的地后的回调函数
+	/// </summary>
 	void ExcuteCall(){
 		if (m_callCompleted != null) {
 			m_callCompleted ();
-			m_callCompleted = null;
 		}
 	}
 
+	/// <summary>
+	/// 同地图里面到某点的回调函数
+	/// </summary>
 	void ExcuteCallMoveArea(){
 		if (m_callArrived4Area != null) {
 			m_callArrived4Area ();
-			m_callArrived4Area = null;
 		}
 	}
 
+	/// <summary>
+	/// 清空
+	/// </summary>
 	void Clear(){
 		queue.Clear ();
 		queueArea.Clear ();
@@ -199,8 +290,13 @@ public class MgrMoveTarget : Kernel<MgrMoveTarget> {
 		master.ClearMoveCompletedAction ();
 		MyScenesManager.Instance ().EntryMapOk -= MoveToNextMap;
 
-		m_callCompleted = null;
 		m_isAutoMove = false;
+	}
+
+	// 清空
+	public void ClearAll(){
+		Clear ();
+		m_callCompleted = null;
 		m_callArrived4Area = null;
 	}
 }

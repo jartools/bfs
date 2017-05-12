@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 /// <summary>
 /// 类名 : 图
-/// 作者 : Canyon
+/// 作者 : Canyon/龚阳辉
 /// 日期 : 2017-02-17 11:30
 /// 功能 : 
 /// </summary>
@@ -12,6 +12,7 @@ public class EM_GraphBase {
 
 	protected EM_IAlgorithm algorithm;
 
+	// 设置算法
 	public void SetAlgorithm(EM_IAlgorithm algorithm){
 		this.algorithm = algorithm;
 	}
@@ -21,10 +22,12 @@ public class EM_GraphBase {
 	/// </summary>
 	Dictionary<string,EM_Node> nodes = new Dictionary<string, EM_Node> ();
 
+	// 取得节点字典
 	public Dictionary<string,EM_Node> GetNodes(){
 		return nodes;
 	}
 
+	// 添加节点
 	public void AddNode(EM_Node node){
 		string key = node.label.ToString ();
 		if (!nodes.ContainsKey (key)) {
@@ -32,14 +35,17 @@ public class EM_GraphBase {
 		}
 	}
 
+	// 取得路径跳转列表
 	public List<EM_Edge> GetEdgePath(){
 		return this.algorithm.GetPathEdge ();
 	}
 
+	// 初始化节点
 	public virtual void InitNodes(uFramework.CFG_TransferGate gate){
 		InitNodes (gate, true);
 	}
 
+	// 初始化节点
 	protected void InitNodes(uFramework.CFG_TransferGate gate, bool isToMap){
 		if (isToMap) {
 			if (gate.GateMapId == gate.TargetMapId)
@@ -75,6 +81,7 @@ public class EM_GraphBase {
 		AddNode (node2);
 	}
 
+	// 取得节点
 	public EM_Node GetNode(object label){
 		string key = label.ToString ();
 		if (nodes.ContainsKey (key)) {
@@ -83,12 +90,14 @@ public class EM_GraphBase {
 		return null;
 	}
 
+	// 设置限定等级
 	public void SetLimitLev(object label,int needLev){
 		EM_Node node = GetNode (label);
 		if (node != null)
 			node.needLevel = needLev;
 	}
 
+	// 寻路(继承需要实现)
 	public virtual void FindPath(params object[] pars){
 	}
 }

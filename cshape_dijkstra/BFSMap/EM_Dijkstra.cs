@@ -11,7 +11,7 @@ using System.Collections.Generic;
 public class EM_Dijkstra : EM_DijkstraBase, EM_Algorithm {
 	
 	#region EM_Algorithm implementation
-
+	// 执行算法
 	public void Perform(EM_GraphBase g, int orgMapId, int toMapId,int curLev)
 	{
 		Clear ();

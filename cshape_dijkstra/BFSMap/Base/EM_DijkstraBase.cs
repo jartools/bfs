@@ -9,19 +9,32 @@ using System.Collections.Generic;
 /// 功能 : 
 /// </summary>
 public class EM_DijkstraBase : EM_IAlgorithm {
-	
+
+	// 图
 	protected EM_GraphBase graph;
+
+	// 开始
 	protected EM_Node start;
+
+	// 目标
 	protected EM_Node target;
 
+	// 打开的节点列表
 	protected HashSet<EM_Node> open = new HashSet<EM_Node>();
+
+	// 关闭的节点列表
 	protected HashSet<EM_Node> close = new HashSet<EM_Node>();
 
+	// 路径距离
 	protected Dictionary<EM_Node,int> path = new Dictionary<EM_Node, int>();
+
+	// 路径信息
 	protected Dictionary<EM_Node,List<EM_Node>> pathInfo = new Dictionary<EM_Node, List<EM_Node>>();
 
 
 	#region EM_IAlgorithm implementation
+
+	// 到达目的地的距离
 	public int Distance ()
 	{
 		if (target == null)
@@ -32,6 +45,7 @@ public class EM_DijkstraBase : EM_IAlgorithm {
 		return 0;
 	}
 
+	// 到达目的地的路径节点列表
 	public List<EM_Node> GetPathNode ()
 	{
 		if (target == null)
@@ -42,6 +56,7 @@ public class EM_DijkstraBase : EM_IAlgorithm {
 		return null;
 	}
 
+	// 到达目的地的路径跳转列表
 	public List<EM_Edge> GetPathEdge ()
 	{
 		List<EM_Node> pp = GetPathNode ();
@@ -69,6 +84,7 @@ public class EM_DijkstraBase : EM_IAlgorithm {
 
 	#endregion
 
+	// 最短节点
 	EM_Node GetShortNode(){
 		EM_Node ret = null;
 		int minDes = int.MaxValue;
@@ -84,6 +100,7 @@ public class EM_DijkstraBase : EM_IAlgorithm {
 		return ret;
 	}
 
+	// 递归算法计算路径，跳转
 	protected void ComputePath(){
 		EM_Node nearset = GetShortNode ();
 		if (nearset == null)
@@ -116,6 +133,7 @@ public class EM_DijkstraBase : EM_IAlgorithm {
 		ComputePath ();
 	}
 
+	// 清除
 	public void Clear()
 	{
 		this.open.Clear ();
@@ -128,6 +146,7 @@ public class EM_DijkstraBase : EM_IAlgorithm {
 		this.target = null;
 	}
 
+	// 执行算法
 	protected void Perform(int curLev){
 		foreach (var item in graph.GetNodes().Values) {
 			if (start.Equals(item))
