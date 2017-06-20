@@ -19,12 +19,25 @@ public class EM_GraphBase {
 
 	/// <summary>
 	/// 节点s
+	/// key : EM_Node.label
 	/// </summary>
 	Dictionary<string,EM_Node> nodes = new Dictionary<string, EM_Node> ();
 
+	/// <summary>
+	/// 返回值(不用随时创建)
+	/// </summary>
+	List<EM_Node> m_outList = new List<EM_Node>();
+
 	// 取得节点字典
-	public Dictionary<string,EM_Node> GetNodes(){
+	public Dictionary<string,EM_Node> GetMapNodes(){
 		return nodes;
+	}
+
+	// 取得列表
+	public List<EM_Node> GetNodes(){
+		m_outList.Clear ();
+		m_outList.AddRange(nodes.Values);
+		return m_outList;
 	}
 
 	// 添加节点
@@ -33,6 +46,44 @@ public class EM_GraphBase {
 		if (!nodes.ContainsKey (key)) {
 			nodes.Add (key, node);
 		}
+
+		AddNode4BelongTo (node);
+	}
+
+	/// <summary>
+	/// 节点s
+	/// key : EM_Node.belongTo
+	/// </summary>
+	protected Dictionary<int,List<EM_Node>> bl2nodes = new Dictionary<int, List<EM_Node>> ();
+
+	/// <summary>
+	/// 添加节点 到 reshop里面
+	/// </summary>
+	/// <param name="node">Node.</param>
+	void AddNode4BelongTo(EM_Node node){
+		int key = node.belongTo;
+		List<EM_Node> list = null;
+		if (bl2nodes.ContainsKey (key)) {
+			list = bl2nodes [key];
+		} else {
+			list = new List<EM_Node> ();
+			bl2nodes.Add (key, list);
+		}
+
+		if (!list.Contains (node))
+			list.Add (node);
+	}
+
+	/// <summary>
+	/// 取得所属列表
+	/// </summary>
+	/// <returns>The nodes.</returns>
+	/// <param name="belongTo">Belong to.</param>
+	public List<EM_Node> GetNodes(int belongTo){
+		if (bl2nodes.ContainsKey (belongTo)) {
+			return bl2nodes [belongTo];
+		}
+		return null;
 	}
 
 	// 取得路径跳转列表

@@ -39,16 +39,25 @@ public class EM_GraphArea : EM_GraphBase{
 	EM_Node GetNode(Vector3 pos,int belongId = -1){
 		EM_Node ret = null;
 		bool isCan = false;
-		foreach (var node in GetNodes ().Values) {
+		List<EM_Node> list = null;
+		if (belongId > 0) {
+			list = GetNodes (belongId);
+		} else {
+			list = GetNodes ();
+		}
+
+		if (list == null || list.Count <= 0) {
+			goto end;
+		}
+
+		foreach (var node in list) {
 			foreach (var edg in node.GetEdgeList()) {
 				m_v3Fm = edg.gate.GateV3;
 				pos.y = m_v3Fm.y;
 				isCan = NavMesh.CalculatePath (m_v3Fm, pos, NavMesh.AllAreas, m_navPath);
 				if (isCan) {
-					if (belongId <= 0 || belongId == node.belongTo) {
-						ret = node;
-						goto end;
-					}
+					ret = node;
+					goto end;
 				}
 			}
 		}

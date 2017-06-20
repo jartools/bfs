@@ -148,7 +148,7 @@ public class EM_DijkstraBase : EM_IAlgorithm {
 
 	// 执行算法
 	protected void Perform(int curLev){
-		foreach (var item in graph.GetNodes().Values) {
+		foreach (var item in graph.GetNodes()) {
 			if (start.Equals(item))
 				continue;
 
@@ -165,7 +165,7 @@ public class EM_DijkstraBase : EM_IAlgorithm {
 			}
 		}
 
-		foreach (var item in graph.GetNodes().Values) {
+		foreach (var item in graph.GetNodes()) {
 			if (open.Contains (item) && !path.ContainsKey(item)) {
 				path.Add (item, int.MaxValue);
 				pathInfo.Add (item, new List<EM_Node> (){ start });
