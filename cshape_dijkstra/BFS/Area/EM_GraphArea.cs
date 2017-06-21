@@ -54,9 +54,9 @@ public class EM_GraphArea : EM_GraphBase{
 		foreach (var node in list) {
 			foreach (var edg in node.GetEdgeList()) {
 				if (isFm)
-					tmpV3 = edg.gate.GateV3;
+					tmpV3 = edg.startV3;
 				else
-					tmpV3 = edg.gate.TargetV3;
+					tmpV3 = edg.endV3;
 				
 				pos.y = tmpV3.y;
 				isCan = NavMesh.CalculatePath (tmpV3, pos, NavMesh.AllAreas, m_navPath);

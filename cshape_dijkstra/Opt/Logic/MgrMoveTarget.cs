@@ -53,10 +53,10 @@ public class MgrMoveTarget : Kernel<MgrMoveTarget> {
 	System.Action m_callArrived4Area = null;
 
 	// 地图与地图之前
-	EM_Graph graphMap = null;
+	public EM_Graph graphMap = null;
 
 	// 当前地图区域内
-	EM_GraphArea graphArea =  null;
+	public EM_GraphArea graphArea =  null;
 
 	// 初始化寻路
 	public void Init(){
@@ -74,6 +74,37 @@ public class MgrMoveTarget : Kernel<MgrMoveTarget> {
 			graphArea.SetLimitLev (item.GateMapId,needLev);
 			graphArea.SetLimitLev (item.TargetMapId,needLev);
 		}
+	}
+
+	/// <summary>
+	/// 取得最近点移动点
+	/// </summary>
+	/// <returns>The near point.</returns>
+	/// <param name="toMapId">To map identifier.</param>
+	/// <param name="toPos">To position.</param>
+	public Vector3 GetNearPoint(int toMapId,Vector3 toPos){
+		if (toMapId <= 0) {
+			return toPos;
+		}
+
+		int fmMapId = curMapId;
+		List<EM_Edge> list = null;
+		if (fmMapId != toMapId) {
+			graphMap.FindPath (fmMapId, toMapId,master.Lv);
+			list = graphMap.GetEdgePath ();
+
+			if (list != null && list.Count  > 0) {
+				toPos = list [0].startV3;
+				toMapId = list [0].start.belongTo;
+			}
+		}
+
+		graphArea.FindPathByPos (master.myTransform.position, toPos, master.Lv,fmMapId,toMapId);
+		list = graphArea.GetEdgePath ();
+		if (list != null && list.Count  > 0) {
+			toPos = list [0].startV3;
+		}
+		return toPos;
 	}
 
 	/// <summary>
@@ -138,7 +169,7 @@ public class MgrMoveTarget : Kernel<MgrMoveTarget> {
 	/// <summary>
 	/// 取得Y值
 	/// </summary>
-	float GetY(Vector3 orgPos){
+	public float GetY(Vector3 orgPos){
         float y;
 		Entity.GetTerrainHeight (orgPos.x, orgPos.z, out y);
         return y;
@@ -154,7 +185,7 @@ public class MgrMoveTarget : Kernel<MgrMoveTarget> {
 		if (queue.Count > 0) {
 			curEdge = queue.Peek ();
 			// 判断地图是否可以到达
-			m_v3ToAreaPos = curEdge.gate.GateV3;
+			m_v3ToAreaPos = curEdge.startV3;
 			m_v3ToAreaPos.y = GetY(m_v3ToAreaPos);
 			belongTo = curEdge.start.belongTo;
 			if (isCanMoveToPos (master.myTransform.position, m_v3ToAreaPos,belongOrg,belongTo)) {
@@ -181,7 +212,13 @@ public class MgrMoveTarget : Kernel<MgrMoveTarget> {
 	/// <summary>
 	/// 同地图里面判断是否可以到某点
 	/// </summary>
-	bool isCanMoveToPos(Vector3 fmPos,Vector3 toPos,int belongOrg,int belongTo){
+	public bool isCanMoveToPos(Vector3 fmPos,Vector3 toPos,int belongOrg,int belongTo){
+		if (belongOrg != belongTo)
+			return false;
+		return isCanMoveToPos4Area (fmPos, toPos, belongOrg, belongTo);
+	}
+
+	bool isCanMoveToPos4Area(Vector3 fmPos,Vector3 toPos,int belongOrg,int belongTo){
 		toPos.y = fmPos.y;
 		graphArea.FindPathByPos (fmPos, toPos, master.Lv,belongOrg,belongTo);
 		List<EM_Edge> list = graphArea.GetEdgePath ();
@@ -231,7 +268,7 @@ public class MgrMoveTarget : Kernel<MgrMoveTarget> {
 		if (queueArea.Count > 0) {
 			curEdge = queueArea.Dequeue ();
 			// Debuger.Log ("MoveToArea = " + curEdge.start.label + " --> " + curEdge.end.label + ", door Pos = " + curEdge.gate.GateV3);
-			master.Move2Pos (curEdge.gate.GateV3,null);
+			master.Move2Pos (curEdge.startV3,null);
 		} else {
 			ExcuteCallMoveArea ();
 		}
