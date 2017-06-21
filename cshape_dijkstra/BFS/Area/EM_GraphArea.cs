@@ -11,7 +11,6 @@ using System.Collections.Generic;
 public class EM_GraphArea : EM_GraphBase{
 
 	NavMeshPath m_navPath = new NavMeshPath();
-	Vector3 m_v3Fm = Vector3.zero;
 
 	public EM_GraphArea(){
 		SetAlgorithm (new EM_DijkstraArea ());
@@ -36,7 +35,7 @@ public class EM_GraphArea : EM_GraphBase{
 	}
 
 	// 取得节点
-	EM_Node GetNode(Vector3 pos,int belongId = -1){
+	EM_Node GetNode(Vector3 pos,int belongId = -1,bool isFm = true){
 		EM_Node ret = null;
 		bool isCan = false;
 		List<EM_Node> list = null;
@@ -50,13 +49,19 @@ public class EM_GraphArea : EM_GraphBase{
 			goto end;
 		}
 
+		Vector3 tmpV3 = Vector3.zero;
+
 		foreach (var node in list) {
 			foreach (var edg in node.GetEdgeList()) {
-				m_v3Fm = edg.gate.GateV3;
-				pos.y = m_v3Fm.y;
-				isCan = NavMesh.CalculatePath (m_v3Fm, pos, NavMesh.AllAreas, m_navPath);
+				if (isFm)
+					tmpV3 = edg.gate.GateV3;
+				else
+					tmpV3 = edg.gate.TargetV3;
+				
+				pos.y = tmpV3.y;
+				isCan = NavMesh.CalculatePath (tmpV3, pos, NavMesh.AllAreas, m_navPath);
 				if (isCan) {
-					ret = node;
+					ret = isFm ? edg.start : edg.end;
 					goto end;
 				}
 			}
@@ -77,7 +82,7 @@ public class EM_GraphArea : EM_GraphBase{
 	// 寻路
 	public void FindPathByPos(Vector3 orgPos,Vector3 toPos,int curLev,int belongOrg = 0,int belongTo = 0){
 		EM_Node fm = GetNode (orgPos,belongOrg);
-		EM_Node to = GetNode (toPos,belongTo);
+		EM_Node to = GetNode (toPos,belongTo,false);
 
 		if (this.algorithm is EM_DijkstraBase) {
 			((EM_DijkstraBase)this.algorithm).Clear ();
