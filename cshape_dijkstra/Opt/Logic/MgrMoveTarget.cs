@@ -53,10 +53,10 @@ public class MgrMoveTarget : Kernel<MgrMoveTarget> {
 	System.Action m_callArrived4Area = null;
 
 	// 地图与地图之前
-	public EM_Graph graphMap = null;
+	EM_Graph graphMap = null;
 
 	// 当前地图区域内
-	public EM_GraphArea graphArea =  null;
+	EM_GraphArea graphArea =  null;
 
 	// 初始化寻路
 	public void Init(){
@@ -105,6 +105,30 @@ public class MgrMoveTarget : Kernel<MgrMoveTarget> {
 			toPos = list [0].startV3;
 		}
 		return toPos;
+	}
+
+	/// <summary>
+	/// 大地图路径
+	/// </summary>
+	public List<EM_Edge> GetPaths4Map(int toMapId){
+		int fmMapId = curMapId;
+
+		if (toMapId <= 0 || fmMapId == toMapId) {
+			return null;
+		}
+
+		graphMap.FindPath (fmMapId, toMapId,master.Lv);
+		return graphMap.GetEdgePath ();
+	}
+
+	/// <summary>
+	/// 本地图路径
+	/// </summary>
+	public List<EM_Edge> GetPaths4Aear(Vector3 toPos){
+		int fmMapId = curMapId;
+		int toMapId = curMapId;
+		graphArea.FindPathByPos (master.myTransform.position, toPos, master.Lv,fmMapId,toMapId);
+		return graphArea.GetEdgePath ();
 	}
 
 	/// <summary>
