@@ -26,6 +26,13 @@ public class EM_Edge  {
 	// 数据源
 	public object data = null;
 
+	uFramework.CFG_TransferGate _gate;
+	public uFramework.CFG_TransferGate gate{
+		get{
+			return _gate;
+		}
+	}
+
 	public EM_Edge(EM_Node start,EM_Node end,uFramework.CFG_TransferGate gate) : this(start,end,1,gate){
 	}
 
@@ -40,7 +47,7 @@ public class EM_Edge  {
 		this.start.AddEdge (this);
 
 		if (data is uFramework.CFG_TransferGate) {
-			uFramework.CFG_TransferGate _gate = (uFramework.CFG_TransferGate)data;
+			_gate = (uFramework.CFG_TransferGate)data;
 			startV3 = _gate.GateV3;
 			endV3 = _gate.TargetV3;
 		}

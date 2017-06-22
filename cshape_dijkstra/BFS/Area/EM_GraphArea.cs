@@ -12,6 +12,8 @@ public class EM_GraphArea : EM_GraphBase{
 
 	NavMeshPath m_navPath = new NavMeshPath();
 
+	NavMeshHit m_navHit = new NavMeshHit();
+
 	public EM_GraphArea(){
 		SetAlgorithm (new EM_DijkstraArea ());
 	}
@@ -51,18 +53,38 @@ public class EM_GraphArea : EM_GraphBase{
 
 		Vector3 tmpV3 = Vector3.zero;
 
+		int lensNavPath = 0;
+		Vector3 navEnd = Vector3.zero;
+		Vector3 diffVal = Vector3.zero;
+
+		Vector3 sourceV3 = Vector3.zero;
+		Vector3 targetV3 = Vector3.zero;
+
+		Vector2 dirSub = Vector2.zero;
+
 		foreach (var node in list) {
 			foreach (var edg in node.GetEdgeList()) {
 				if (isFm)
 					tmpV3 = edg.startV3;
 				else
 					tmpV3 = edg.endV3;
-				
-				pos.y = tmpV3.y;
-				isCan = NavMesh.CalculatePath (tmpV3, pos, NavMesh.AllAreas, m_navPath);
-				if (isCan) {
-					ret = isFm ? edg.start : edg.end;
-					goto end;
+
+				sourceV3 = CorrectPos (pos);
+				targetV3 = CorrectPos (tmpV3);
+
+				isCan = NavMesh.CalculatePath (sourceV3, targetV3, NavMesh.AllAreas, m_navPath);
+				lensNavPath = m_navPath.corners.Length;
+				if (isCan && lensNavPath > 0) {
+					navEnd = m_navPath.corners [lensNavPath - 1];
+					diffVal = navEnd - tmpV3;
+
+					dirSub.x = diffVal.x;
+					dirSub.y = diffVal.z;
+
+					if (dirSub.sqrMagnitude < 0.5f) {
+						ret = isFm ? edg.start : edg.end;
+						goto end;
+					}
 				}
 			}
 		}
@@ -71,6 +93,16 @@ public class EM_GraphArea : EM_GraphBase{
 			m_navPath.ClearCorners ();
 			return ret;
 		}
+	}
+
+	// 校准点
+	Vector3 CorrectPos(Vector3 org,bool isCorrect = true){
+		if (isCorrect) {
+			if (NavMesh.SamplePosition (org, out m_navHit, 1.0f, NavMesh.AllAreas)) {
+				return m_navHit.position;
+			}
+		}
+		return org;
 	}
 
 	// 初始化节点
@@ -97,5 +129,19 @@ public class EM_GraphArea : EM_GraphBase{
 		}
 
 		FindPath (fm.belongTo, fm.types, to.types, curLev);
+	}
+
+	void TestNavMesh(int belongTo){
+		float y = 9.6f; // 与高度有关的
+		Vector3 vv = new Vector3 (53, y, 16.7f);
+		EM_Node toY = GetNode(vv,belongTo,false);
+
+		bool kkk1 = NavMesh.CalculatePath (vv, new Vector3(93.2f,16.36f,95.9f), NavMesh.AllAreas, m_navPath);
+
+		bool kkk2 = NavMesh.CalculatePath (vv, new Vector3(79.13f,26.81f,104f), NavMesh.AllAreas, m_navPath);
+
+		bool kkk3 = NavMesh.CalculatePath (vv, new Vector3(76f,26.81f,114.53f), NavMesh.AllAreas, m_navPath);
+
+		bool kkk4 = NavMesh.CalculatePath (vv, new Vector3(91.24f,16.36f,91.15f), NavMesh.AllAreas, m_navPath);
 	}
 }

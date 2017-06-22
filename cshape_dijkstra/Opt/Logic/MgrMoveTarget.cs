@@ -219,7 +219,6 @@ public class MgrMoveTarget : Kernel<MgrMoveTarget> {
 	}
 
 	bool isCanMoveToPos4Area(Vector3 fmPos,Vector3 toPos,int belongOrg,int belongTo){
-		toPos.y = fmPos.y;
 		graphArea.FindPathByPos (fmPos, toPos, master.Lv,belongOrg,belongTo);
 		List<EM_Edge> list = graphArea.GetEdgePath ();
 		return (list == null || list.Count <= 0);
@@ -231,8 +230,6 @@ public class MgrMoveTarget : Kernel<MgrMoveTarget> {
 	void ComputeMoveToPos(Vector3 fmPos,Vector3 toPos,System.Action callArriveArea,int belongOrg,int belongTo){
 		queueArea.Clear ();
 		this.m_callArrived4Area = callArriveArea;
-
-		toPos.y = fmPos.y;
 
 		graphArea.FindPathByPos (fmPos, toPos, master.Lv,belongOrg,belongTo);
 		List<EM_Edge> list = graphArea.GetEdgePath ();
