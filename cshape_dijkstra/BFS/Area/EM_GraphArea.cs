@@ -55,12 +55,10 @@ public class EM_GraphArea : EM_GraphBase{
 
 		int lensNavPath = 0;
 		Vector3 navEnd = Vector3.zero;
-		Vector3 diffVal = Vector3.zero;
+		Vector3 diffSub = Vector3.zero;
 
 		Vector3 sourceV3 = Vector3.zero;
 		Vector3 targetV3 = Vector3.zero;
-
-		Vector2 dirSub = Vector2.zero;
 
 		foreach (var node in list) {
 			foreach (var edg in node.GetEdgeList()) {
@@ -76,12 +74,10 @@ public class EM_GraphArea : EM_GraphBase{
 				lensNavPath = m_navPath.corners.Length;
 				if (isCan && lensNavPath > 0) {
 					navEnd = m_navPath.corners [lensNavPath - 1];
-					diffVal = navEnd - tmpV3;
+					diffSub = navEnd - targetV3;
+					diffSub.y = 0;
 
-					dirSub.x = diffVal.x;
-					dirSub.y = diffVal.z;
-
-					if (dirSub.sqrMagnitude < 0.5f) {
+					if (diffSub.sqrMagnitude < 0.5f) {
 						ret = isFm ? edg.start : edg.end;
 						goto end;
 					}
@@ -129,6 +125,33 @@ public class EM_GraphArea : EM_GraphBase{
 		}
 
 		FindPath (fm.belongTo, fm.types, to.types, curLev);
+	}
+
+	/// <summary>
+	/// 判断两个点是否可以到达(Navmesh的逻辑)
+	/// </summary>
+	public bool IsCanArrive4NavMesh(Vector3 fmV3,Vector3 toV3){
+		bool isResult = false;
+
+		Vector3 sourceV3 = CorrectPos (fmV3);
+		Vector3 targetV3 = CorrectPos (toV3);
+
+		int lensNavPath = 0;
+		Vector3 navEnd = Vector3.zero;
+		Vector3 diffSub = Vector3.zero;
+
+		bool isCan = NavMesh.CalculatePath (sourceV3, targetV3, NavMesh.AllAreas, m_navPath);
+		lensNavPath = m_navPath.corners.Length;
+		if (isCan && lensNavPath > 0) {
+			navEnd = m_navPath.corners [lensNavPath - 1];
+			diffSub = navEnd - targetV3;
+			diffSub.y = 0;
+
+			isResult = (diffSub.sqrMagnitude < 0.5f);
+		}
+
+		m_navPath.ClearCorners ();
+		return isResult;
 	}
 
 	void TestNavMesh(int belongTo){
