@@ -71,6 +71,29 @@ public class Graph {
 			}
 		}
 	}
+	
+	public Node GetNearlyNode(){
+		int[] columns;
+		int numColumn = 0;
+		Node node;
+		float minNearly = Integer.MAX_VALUE;
+		Node nodeNearly = null;
+		for (int y = 0; y < map.length; y++) {
+			columns = map[y];
+			numColumn = columns.length;
+			if (numColumn <= 0)
+				continue;
+			
+			for (int x = 0; x < numColumn; x++) {
+				node = getNode(x, y);
+				if(node.isSearched() && node.gethWeight() < minNearly){
+					nodeNearly = node;
+					minNearly = node.gethWeight();
+				}
+			}
+		}
+		return nodeNearly;
+	}
 
 	// 清除拥有计算的信息
 	public void ClearNodeCalcInfo() {
@@ -99,15 +122,15 @@ public class Graph {
 	}
 
 	public Node findPath(Node from, Node to, Node[] dynamicClose) {
-		if (from == null || from.val > 0) {
-			return null;
-		}
-		if (to == null || to.val > 0) {
-			return null;
-		}
 		ClearNodeCalcInfo();
-		this.algorithm.perform(this, from, to, dynamicClose);
-		return to;
+		
+		if (from == null || from.isRed()) {
+			return null;
+		}
+		if (to == null || to.isRed()) {
+			return null;
+		}
+		return this.algorithm.perform(this, from, to, dynamicClose);
 	}
 	
 	public void printSearchResult(Node end){
@@ -127,7 +150,7 @@ public class Graph {
 			
 			for (int x = 0; x < numColumn; x++) {
 				node = getNode(x, y);
-				System.out.print(node.val + " ");
+				System.out.print(node.getValStr() + " ");
 			}
 			System.out.println();
 		}

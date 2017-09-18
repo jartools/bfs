@@ -6,6 +6,13 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class ImplAlgorithm implements IAlgorithm {
+	public enum SearchSlash {
+		None, // 不走对角线
+		SearchSlash, // 走对角线
+		SearchSlashJugde, // 走对角线 并且 要判断上,下，左,右,减少对角线
+		SearchSlashNearly, // 走对角线 并且 要判断上,下，左,右,减少对角线,如果到不了，就判断相对最近点作为目标
+	}
+
 	/**
 	 * 相邻的代价
 	 */
@@ -15,22 +22,22 @@ public class ImplAlgorithm implements IAlgorithm {
 	 * 斜线的代价
 	 */
 	float Weight_Slash = 2;
-	
-	boolean isSearchSlash = false;
 
-	public ImplAlgorithm(float weightAdJoin,boolean isSearchSlash) {
+	SearchSlash m_emSlash = SearchSlash.None;
+
+	public ImplAlgorithm(float weightAdJoin, SearchSlash searchSlash) {
 		Weight_AdJoin = weightAdJoin;
 		double d = Math.pow(Weight_AdJoin, 2) * 2;
-		Weight_Slash = (float)Math.sqrt(d);
-		this.isSearchSlash = isSearchSlash;
+		Weight_Slash = (float) Math.sqrt(d);
+		this.m_emSlash = searchSlash;
 	}
-	
-	public ImplAlgorithm(float weightAdJoin){
-		this(weightAdJoin, true);
+
+	public ImplAlgorithm(float weightAdJoin) {
+		this(weightAdJoin, SearchSlash.SearchSlashJugde);
 	}
-	
-	public ImplAlgorithm(boolean isSearchSlash){
-		this(1, isSearchSlash);
+
+	public ImplAlgorithm(SearchSlash searchSlash) {
+		this(1, searchSlash);
 	}
 
 	Graph graph;
@@ -50,14 +57,20 @@ public class ImplAlgorithm implements IAlgorithm {
 		this.start = start;
 		this.end = end;
 
+		this.start.SetStartVal();
+		this.end.SetEndVal();
+
 		if (dynamicClose != null && dynamicClose.length > 0) {
 			for (int i = 0; i < dynamicClose.length; i++) {
 				closeList.add(dynamicClose[i]);
 			}
 		}
-		
+
 		computePath();
-		
+
+		if (this.m_emSlash == SearchSlash.SearchSlashNearly) {
+			return graph.GetNearlyNode();
+		}
 		return this.end;
 	}
 
@@ -69,6 +82,8 @@ public class ImplAlgorithm implements IAlgorithm {
 			}
 			current = openList.poll();
 			closeList.add(current);
+
+			addNeighborNodeInOpen(current);
 		}
 	}
 
@@ -82,16 +97,26 @@ public class ImplAlgorithm implements IAlgorithm {
 		}
 		return false;
 	}
-	
-	Node GetNodeInOpenList(int x,int y){
-		if(openList.isEmpty())
+
+	Node GetNodeInOpenList(int x, int y) {
+		if (openList.isEmpty())
 			return null;
-		
+
 		for (Node node : openList) {
 			if (node.x == x && node.y == y)
 				return node;
 		}
 		return null;
+	}
+
+	Node GetNodeToOpen(int nX, int nY) {
+		if (isInCloseList(nX, nY))
+			return null;
+
+		Node node = this.graph.getNode(nX, nY);
+		if (node == null || node.isRed())
+			return null;
+		return node;
 	}
 
 	void addNeighborNodeInOpen(Node current) {
@@ -106,59 +131,99 @@ public class ImplAlgorithm implements IAlgorithm {
 		// 右
 		addNeighborNodeInOpen(current, x + 1, y, Weight_AdJoin);
 
+		if (this.m_emSlash == SearchSlash.None)
+			return;
+
+		boolean isLeftUp = true;
+		boolean isLeftDown = true;
+		boolean isRightDown = true;
+		boolean isRightUp = true;
+
+		boolean isJugdeSlash = this.m_emSlash == SearchSlash.SearchSlashJugde
+				|| this.m_emSlash == SearchSlash.SearchSlashNearly;
+		
+		if (isJugdeSlash) {
+			int nullCount = 0;
+			Node up = GetNodeToOpen(x, y + 1);
+			nullCount = (up == null) ? nullCount + 1 : nullCount;
+			Node down = GetNodeToOpen(x, y - 1);
+			nullCount = (down == null) ? nullCount + 1 : nullCount;
+			Node left = GetNodeToOpen(x - 1, y);
+			nullCount = (left == null) ? nullCount + 1 : nullCount;
+			Node ritght = GetNodeToOpen(x + 1, y);
+			nullCount = (ritght == null) ? nullCount + 1 : nullCount;
+			if (nullCount >= 3) {
+				if (up == null && down == null) {
+					isLeftUp = left != null;
+					isLeftDown = isLeftUp;
+					isRightUp = ritght != null;
+					isRightDown = isRightUp;
+				} else {
+					isLeftUp = up != null;
+					isRightUp = isLeftUp;
+					isLeftDown = down != null;
+					isRightDown = isLeftDown;
+				}
+			}
+		}
+
 		// 左上
-		addNeighborNodeInOpen(current, x - 1, y + 1, Weight_AdJoin);
+		if (isLeftUp)
+			addNeighborNodeInOpen(current, x - 1, y + 1, Weight_Slash);
+
 		// 左下
-		addNeighborNodeInOpen(current, x - 1, y - 1, Weight_AdJoin);
+		if (isLeftDown)
+			addNeighborNodeInOpen(current, x - 1, y - 1, Weight_Slash);
+
 		// 右下
-		addNeighborNodeInOpen(current, x + 1, y - 1, Weight_AdJoin);
+		if (isRightDown)
+			addNeighborNodeInOpen(current, x + 1, y - 1, Weight_Slash);
+
 		// 右上
-		addNeighborNodeInOpen(current, x + 1, y + 1, Weight_AdJoin);
+		if (isRightUp)
+			addNeighborNodeInOpen(current, x + 1, y + 1, Weight_Slash);
 	}
-	
+
 	/**
-	 * “曼哈顿” 距离 
+	 * “曼哈顿” 距离
 	 */
-	int calcMhDistance(int x1,int y1,int x2,int y2){
+	int calcMhDistance(int x1, int y1, int x2, int y2) {
 		return Math.abs(x1 - x2) + Math.abs(y1 - y2);
 	}
-	
+
 	// 当前点到目的点的权重
-	int calcHWeight(int x,int y){
-		return calcMhDistance(end.x,end.y,x,y);
+	int calcHWeight(int x, int y) {
+		return calcMhDistance(end.x, end.y, x, y);
 	}
-	
-	boolean isCurrNode(Node curr,int x,int y){
+
+	boolean isCurrNode(Node curr, int x, int y) {
 		return curr.x == x && curr.y == y;
 	}
-	
-	boolean isEndNode(int x,int y){
+
+	boolean isEndNode(int x, int y) {
 		return isCurrNode(end, x, y);
 	}
 
 	void addNeighborNodeInOpen(Node current, int nX, int nY, float weight) {
-		if(isInCloseList(nX, nY))
+		Node node = GetNodeToOpen(nX, nY);
+		if (node == null)
 			return;
-		
-		Node node = this.graph.getNode(nX,nY);
-		if(node == null || node.val > 0)
-			return;
-		
+
 		float gWeight = current.getgWeight() + weight;
-		
+
 		Node nodeInOpen = GetNodeInOpenList(nX, nY);
-		if(nodeInOpen == null){
+		if (nodeInOpen == null) {
 			int hWeight = calcHWeight(nX, nY);
-			if(isEndNode(nX,nY)){
+			if (isEndNode(nX, nY)) {
 				nodeInOpen = end;
-			}else{
+			} else {
 				nodeInOpen = node;
 			}
 			nodeInOpen.parent = current;
 			nodeInOpen.setgWeight(gWeight);
 			nodeInOpen.sethWeight(hWeight);
 			openList.add(nodeInOpen);
-		}else if(nodeInOpen.getgWeight() > gWeight){
+		} else if (nodeInOpen.getgWeight() > gWeight) {
 			nodeInOpen.parent = current;
 			nodeInOpen.setgWeight(gWeight);
 		}
