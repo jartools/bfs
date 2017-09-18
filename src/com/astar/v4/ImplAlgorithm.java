@@ -6,13 +6,6 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class ImplAlgorithm implements IAlgorithm {
-	public enum SearchSlash {
-		None, // 不走对角线
-		SearchSlash, // 走对角线
-		SearchSlashJugde, // 走对角线 并且 要判断上,下，左,右,减少对角线
-		SearchSlashNearly, // 走对角线 并且 要判断上,下，左,右,减少对角线,如果到不了，就判断相对最近点作为目标
-	}
-
 	/**
 	 * 相邻的代价
 	 */
@@ -33,7 +26,7 @@ public class ImplAlgorithm implements IAlgorithm {
 	}
 
 	public ImplAlgorithm(float weightAdJoin) {
-		this(weightAdJoin, SearchSlash.SearchSlashJugde);
+		this(weightAdJoin, SearchSlash.SlashJugde);
 	}
 
 	public ImplAlgorithm(SearchSlash searchSlash) {
@@ -68,7 +61,7 @@ public class ImplAlgorithm implements IAlgorithm {
 
 		computePath();
 
-		if (this.m_emSlash == SearchSlash.SearchSlashNearly) {
+		if (this.end.parent == null && isNearlay()) {
 			return graph.GetNearlyNode();
 		}
 		return this.end;
@@ -131,7 +124,10 @@ public class ImplAlgorithm implements IAlgorithm {
 		// 右
 		addNeighborNodeInOpen(current, x + 1, y, Weight_AdJoin);
 
-		if (this.m_emSlash == SearchSlash.None)
+		boolean isNotSlash = this.m_emSlash == SearchSlash.None
+				|| this.m_emSlash == SearchSlash.Nearly;
+		
+		if (isNotSlash)
 			return;
 
 		boolean isLeftUp = true;
@@ -139,9 +135,9 @@ public class ImplAlgorithm implements IAlgorithm {
 		boolean isRightDown = true;
 		boolean isRightUp = true;
 
-		boolean isJugdeSlash = this.m_emSlash == SearchSlash.SearchSlashJugde
-				|| this.m_emSlash == SearchSlash.SearchSlashNearly;
-		
+		boolean isJugdeSlash = this.m_emSlash == SearchSlash.SlashJugde
+				|| this.m_emSlash == SearchSlash.NearlySlashJugde;
+
 		if (isJugdeSlash) {
 			int nullCount = 0;
 			Node up = GetNodeToOpen(x, y + 1);
@@ -228,5 +224,12 @@ public class ImplAlgorithm implements IAlgorithm {
 			nodeInOpen.setgWeight(gWeight);
 		}
 		nodeInOpen.SetSeachVal();
+	}
+
+	@Override
+	public boolean isNearlay() {
+		return m_emSlash == SearchSlash.Nearly
+				|| m_emSlash == SearchSlash.NearlySlash
+				|| m_emSlash == SearchSlash.NearlySlashJugde;
 	}
 }
