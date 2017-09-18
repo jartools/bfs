@@ -16,7 +16,7 @@ public class Graph {
 
 	// 二维数组的地图
 	int[][] map;
-
+	
 	// 地图节点转为数据处理节点
 	Map<String, Node> nodes = new HashMap<String, Node>();
 
@@ -44,15 +44,19 @@ public class Graph {
 		return null;
 	}
 
+	public Node getNode(int x, int y) {
+		String label = String.format("%s_%s", x, y);
+		return getNode(label);
+	}
+
 	public void InitGraph(int[][] map) {
 		this.map = map;
 		this.nodes.clear();
-
 		if (this.map == null || this.map.length <= 0)
 			return;
 		int numRow = map.length;
 		int numColumn = 0;
-
+		
 		int[] columns;
 		Node node;
 		for (int y = 0; y < numRow; y++) {
@@ -60,16 +64,16 @@ public class Graph {
 			numColumn = columns.length;
 			if (numColumn <= 0)
 				continue;
-
+			
 			for (int x = 0; x < numColumn; x++) {
-				node = new Node(x, y,columns[x]);
+				node = new Node(x, y, columns[x]);
 				addNode(node);
 			}
 		}
 	}
-	
+
 	// 清除拥有计算的信息
-	public void ClearNodeCalcInfo(){
+	public void ClearNodeCalcInfo() {
 		for (Node node : nodes.values()) {
 			node.ClearCalc();
 		}
@@ -77,20 +81,9 @@ public class Graph {
 
 	public Node findPath(String fmLabel, String toLabel, String[] outLabels) {
 		Node start = getNode(fmLabel);
-		if(start == null || start.val > 0){
-			return null;
-		}
 		Node end = getNode(toLabel);
-		if(end == null || end.val > 0){
-			return null;
-		}
-		
-		ClearNodeCalcInfo();
-
 		List<Node> list;
-		
 		Node[] dynamicClose = {};
-		
 		if (outLabels != null && outLabels.length > 0) {
 			list = new ArrayList<Node>();
 			Node out;
@@ -102,8 +95,41 @@ public class Graph {
 			}
 			dynamicClose = list.toArray(dynamicClose);
 		}
+		return findPath(start, end, dynamicClose);
+	}
+
+	public Node findPath(Node from, Node to, Node[] dynamicClose) {
+		if (from == null || from.val > 0) {
+			return null;
+		}
+		if (to == null || to.val > 0) {
+			return null;
+		}
+		ClearNodeCalcInfo();
+		this.algorithm.perform(this, from, to, dynamicClose);
+		return to;
+	}
+	
+	public void printSearchResult(Node end){
+		while (end != null) {
+			end.SetPathVal();
+			end = end.parent;
+		}
 		
-		this.algorithm.perform(this, start, end, dynamicClose);
-		return end; 
+		int[] columns;
+		int numColumn = 0;
+		Node node;
+		for (int y = 0; y < map.length; y++) {
+			columns = map[y];
+			numColumn = columns.length;
+			if (numColumn <= 0)
+				continue;
+			
+			for (int x = 0; x < numColumn; x++) {
+				node = getNode(x, y);
+				System.out.print(node.val + " ");
+			}
+			System.out.println();
+		}
 	}
 }

@@ -9,6 +9,7 @@ public class AStar_V3 {
 	// 来源地址 ：  https://github.com/ClaymanTwinkle/astar
 	public final static int BAR = 1; // 障碍值
 	public final static int PATH = 2; // 路径
+	public final static int SEARCH = 3; // 寻过的点
 	public final static int DIRECT_VALUE = 10; // 横竖移动代价
 	public final static int OBLIQUE_VALUE = 14; // 斜移动代价
 
@@ -106,6 +107,7 @@ public class AStar_V3 {
 				child.parent = current;
 				openList.add(child);
 			}
+			mapInfo.maps[y][x] = SEARCH; 
 		}
 	}
 
@@ -167,17 +169,18 @@ public class AStar_V3 {
 		}
 		return false;
 	}
+	
+	static public int[][] maps = { 
+		{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 },
+		{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 },
+		{ 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0 },
+		{ 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0 },
+		{ 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0 },
+		{ 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
+		{ 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 } };
 
 	public static void main(String[] args) {
-		int[][] maps = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-				{ 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0 },
-				{ 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0 },
-				{ 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0 },
-				{ 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-				{ 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 } };
-		
-		MapInfo info = new MapInfo(maps, new Node(1, 5), new Node(10, 5));
+		MapInfo info = new MapInfo(maps, new Node(1, 5), new Node(12, 1));
 		new AStar_V3().start(info);
 		printMap(maps);
 	}
