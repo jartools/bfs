@@ -7,32 +7,20 @@ import java.util.Queue;
 
 public class ImplAlgorithm implements IAlgorithm {
 	/**
-	 * 相邻的代价
+	 * 相邻的代价 1 -> 10
 	 */
-	float Weight_AdJoin = 1;
+	int Weight_AdJoin = 10;
 
 	/**
-	 * 斜线的代价
+	 * 斜线的代价 1+1的平方根1.414213 -> 14
 	 */
-	float Weight_Slash = 2;
+	int Weight_Slash = 14;
 
 	SearchSlash m_emSlash = SearchSlash.None;
 
-	public ImplAlgorithm(float weightAdJoin, SearchSlash searchSlash) {
-		Weight_AdJoin = weightAdJoin;
-		double d = Math.pow(Weight_AdJoin, 2) * 2;
-		Weight_Slash = (float) Math.sqrt(d);
+	public ImplAlgorithm(SearchSlash searchSlash) {
 		this.m_emSlash = searchSlash;
 	}
-
-	public ImplAlgorithm(float weightAdJoin) {
-		this(weightAdJoin, SearchSlash.SlashJugde);
-	}
-
-	public ImplAlgorithm(SearchSlash searchSlash) {
-		this(1, searchSlash);
-	}
-
 	Graph graph;
 	Node start;
 	Node end;
@@ -200,12 +188,12 @@ public class ImplAlgorithm implements IAlgorithm {
 		return isCurrNode(end, x, y);
 	}
 
-	void addNeighborNodeInOpen(Node current, int nX, int nY, float weight) {
+	void addNeighborNodeInOpen(Node current, int nX, int nY, int weight) {
 		Node node = GetNodeToOpen(nX, nY);
 		if (node == null)
 			return;
 
-		float gWeight = current.getgWeight() + weight;
+		int gWeight = current.getgWeight() + weight;
 
 		Node nodeInOpen = GetNodeInOpenList(nX, nY);
 		if (nodeInOpen == null) {

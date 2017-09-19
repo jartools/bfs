@@ -75,28 +75,28 @@ public class Node implements Comparable<Node> {
 	public Node parent;
 
 	// 起点 到 当前点 的代价(准确值)
-	private float gWeight;
+	private int gWeight;
 
 	// 当前点 到 目标点 的代价(估计值)
-	private float hWeight;
+	private int hWeight;
 
 	// 总价值
-	public float fWeight;
+	public int fWeight;
 
-	public float getgWeight() {
+	public int getgWeight() {
 		return gWeight;
 	}
 
-	public void setgWeight(float gWeight) {
+	public void setgWeight(int gWeight) {
 		this.gWeight = gWeight;
 		CalcAllWeight();
 	}
 
-	public float gethWeight() {
+	public int gethWeight() {
 		return hWeight;
 	}
 
-	public void sethWeight(float hWeight) {
+	public void sethWeight(int hWeight) {
 		this.hWeight = hWeight;
 		CalcAllWeight();
 	}
